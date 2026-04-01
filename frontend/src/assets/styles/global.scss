@@ -1,0 +1,124 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+  // 科技深蓝背景
+  background: linear-gradient(135deg, #001529 0%, #0a192f 100%);
+  color: #e6f7ff;
+}
+
+// 科技感滚动条
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: #00d4ff;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-track {
+  background: #001529;
+}
+
+// 主标题
+.tech-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(90deg, #00d4ff, #1890ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 16px;
+  position: relative;
+  padding-left: 12px;
+}
+.tech-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 20px;
+  background: #00d4ff;
+  border-radius: 2px;
+}
+
+// 科技感卡片（核心！和你截图一模一样的风格）
+.tech-card {
+  background: rgba(0, 26, 41, 0.7);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 8px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.1);
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+}
+.tech-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+  animation: techLight 3s infinite linear;
+}
+@keyframes techLight {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.tech-card:hover {
+  border-color: rgba(0, 212, 255, 0.4);
+  box-shadow: 0 6px 24px rgba(0, 212, 255, 0.15);
+}
+
+// 科技按钮
+.tech-btn {
+  background: linear-gradient(90deg, #00d4ff, #1890ff);
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  height: 36px;
+  padding: 0 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 212, 255, 0.3);
+}
+.tech-btn:hover {
+  opacity: 0.9;
+  box-shadow: 0 3px 12px rgba(0, 212, 255, 0.4);
+}
+
+// 科技边框模块
+.tech-panel {
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 6px;
+  padding: 16px;
+  background: rgba(0, 20, 35, 0.6);
+}
+
+// 数据数字样式
+.tech-number {
+  font-size: 28px;
+  font-weight: bold;
+  color: #00d4ff;
+}
+
+// 布局容器
+.tech-container {
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}

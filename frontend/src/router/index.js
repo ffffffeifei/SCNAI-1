@@ -9,7 +9,7 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/views/Login.vue'),
+    component: () => import('@/views/login/index.vue'),
     meta: { requiresGuest: true }
   },
   {
@@ -65,6 +65,30 @@ const routes = [
     name: 'PlantDetail',
     component: () => import('@/views/PlantDetail.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: () => import('@/views/admin/index.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/farmer',
+    name: 'Farmer',
+    component: () => import('@/views/farmer/index.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/expert',
+    name: 'Expert',
+    component: () => import('@/views/expert/index.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/user',
+    name: 'User',
+    component: () => import('@/views/user/index.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 
@@ -73,19 +97,19 @@ const router = createRouter({
   routes
 })
 
-// 路由守卫
-router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token')
-  const isAuthenticated = !!token
+// // 路由守卫
+// router.beforeEach((to, from, next) => {
+//   const token = localStorage.getItem('token')
+//   const isAuthenticated = !!token
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next({ name: 'Login', query: { redirect: to.fullPath } })
-  } else if (to.meta.requiresGuest && isAuthenticated) {
-    next({ name: 'Dashboard' })
-  } else {
-    next()
-  }
-})
+//   if (to.meta.requiresAuth && !isAuthenticated) {
+//     next({ name: 'Login', query: { redirect: to.fullPath } })
+//   } else if (to.meta.requiresGuest && isAuthenticated) {
+//     next({ name: 'Dashboard' })
+//   } else {
+//     next()
+//   }
+// })
 
 export default router
 
