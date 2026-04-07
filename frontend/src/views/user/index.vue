@@ -5,7 +5,6 @@
       <div class="data-item tech-card"><p>累计识别</p><div class="tech-number">76</div></div>
       <div class="data-item tech-card"><p>图鉴浏览</p><div class="tech-number">132</div></div>
       <div class="data-item tech-card"><p>我的提问</p><div class="tech-number">18</div></div>
-      <div class="data-item tech-card"><p>已回复</p><div class="tech-number">16</div></div>
 
       <div class="panel tech-card" style="width:100%">
         <h3 class="tech-title">功能菜单</h3>

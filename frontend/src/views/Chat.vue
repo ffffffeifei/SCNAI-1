@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <ParticlesBackground />
-    <Sidebar />
+    <!-- <Sidebar /> -->
     <main class="main-content">
       <div class="top-nav">
         <h2 class="top-nav-title">智能问答</h2>
