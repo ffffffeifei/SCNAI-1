@@ -18,8 +18,8 @@
       </div>
 
       <div class="content-container" style="width:100%;margin-top:20px;">
-        <div v-if="currentPage === 'field'" class="tech-card" style="padding:30px;text-align:center;color:#fff;">地块管理页面</div>
-        <div v-if="currentPage === 'task'" class="tech-card" style="padding:30px;text-align:center;color:#fff;">任务派发页面</div>
+        <Field v-if="currentPage === 'field'" />
+        <Task div v-if="currentPage === 'task'" />
         <History v-if="currentPage === 'history'" />
         <Dashboard v-if="currentPage === 'dashboard'" />
       </div>
@@ -31,6 +31,8 @@
 import { ref } from 'vue'
 import History from '@/views/History.vue'
 import Dashboard from '@/views/Dashboard.vue'
+import Field from '../Field.vue'
+import Task from '../task.vue'
 
 // 默认显示第一个功能：地块管理
 const currentPage = ref('field')

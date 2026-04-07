@@ -12,7 +12,9 @@
 }
 
 /* 全局 Font Awesome 图标样式 */
-i.fas, i.far, i.fab {
+i.fas,
+i.far,
+i.fab {
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
     display: inline-block;
@@ -476,4 +478,3 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: #4a5568;
 }
-
