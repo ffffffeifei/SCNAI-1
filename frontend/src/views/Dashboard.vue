@@ -63,7 +63,7 @@
     </div>
 
     <!-- 图表区域 -->
-    <div style="display:grid; grid-template-columns:2fr 1fr; gap:20px; margin-bottom:20px">
+    <div style="display:grid; grid-template-columns:2fr 1fr; gap:20px; margin-bottom:20px;">
       <!-- 折线图：产量趋势 -->
       <div class="chart-wrapper">
         <div class="chart-title">作物产量趋势</div>
@@ -254,7 +254,7 @@ export default {
 
 /* 科技感卡片 */
 .tech-card {
-  background: #8fbac7;
+  background: #00D4FF1A;
   border-radius: 8px;
   padding: 20px;
   position: relative;
@@ -268,13 +268,13 @@ export default {
 
 .tech-label {
   font-size: 14px;
-  color: #666;
+  color: #FFF;
   margin-bottom: 8px;
 }
 .tech-num {
   font-size: 28px;
   font-weight: bold;
-  color: #333;
+  color: #FFF;
   line-height: 1.2;
 }
 .tech-sub {
@@ -285,7 +285,7 @@ export default {
 
 /* 图表容器 */
 .chart-wrapper {
-  background: #c5dce3;
+  background: #00D4FF1A;
   border-radius: 8px;
   padding: 16px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
@@ -294,7 +294,7 @@ export default {
 .chart-title {
   font-size: 16px;
   font-weight: 600;
-  color: #333;
+  color: #FFF;
   margin-bottom: 12px;
 }
 </style>
