@@ -6,20 +6,36 @@
       <div class="data-item tech-card"><p>设备在线</p><div class="tech-number">98%</div></div>
       <div class="data-item tech-card"><p>数据总量</p><div class="tech-number">1.2T</div></div>
       <div class="data-item tech-card"><p>系统状态</p><div class="tech-number">正常</div></div>
+
       <div class="panel tech-card" style="width:100%">
         <h3 class="tech-title">功能菜单</h3>
         <div class="menu-grid">
-          <div class="menu-item">用户管理</div>
-          <div class="menu-item">设备管理</div>
-          <div class="menu-item">数据监控</div>
-          <div class="menu-item">系统运维</div>
-          <div class="menu-item">权限分配</div>
-          <div class="menu-item">日志管理</div>
+          <div class="menu-item" @click="show('profile')">用户管理</div>
+          <div class="menu-item" @click="show('device')">设备管理</div>
+          <div class="menu-item" @click="show('dashboard')">数据监控</div>
         </div>
+      </div>
+
+      <div class="content-container" style="width:100%;margin-top:20px;">
+        <Profile v-if="currentPage === 'profile'" />
+        <div v-if="currentPage === 'device'" class="tech-card" style="padding:30px;text-align:center;color:#fff;">设备管理页面</div>
+        <Dashboard v-if="currentPage === 'dashboard'" />
       </div>
     </div>
   </div>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+import Profile from '@/views/Profile.vue'
+import Dashboard from '@/views/Dashboard.vue'
+
+// 默认显示第一个功能：用户管理
+const currentPage = ref('profile')
+const show = (page) => {
+  currentPage.value = page
+}
+</script>
 
 <style scoped>
 .dashboard-page { width:100%; min-height:100vh; }

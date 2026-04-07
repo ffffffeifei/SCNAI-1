@@ -19,7 +19,6 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
-
 const username = ref('')
 const password = ref('')
 
@@ -28,15 +27,15 @@ const login = () => {
   const pwd = password.value
 
   if (user === 'admin' && pwd === '123456') {
+    localStorage.setItem('userRole', 'admin')
     router.push('/admin')
   } 
   else if (user === 'farmer' && pwd === '123456') {
+    localStorage.setItem('userRole', 'farmer')
     router.push('/farmer')
   }
-  else if (user === 'expert' && pwd === '123456') {
-    router.push('/expert')
-  }
   else if (user === 'user' && pwd === '123456') {
+    localStorage.setItem('userRole', 'user')
     router.push('/user')
   }
   else {
@@ -57,6 +56,18 @@ const login = () => {
 .login-card {
   width: 420px;
   padding: 40px 30px;
+  background: rgba(0,26,41,0.6);
+  border: 1px solid rgba(0,212,255,0.3);
+  border-radius: 12px;
+  backdrop-filter: blur(6px);
+}
+.tech-title {
+  text-align: center;
+  font-size: 22px;
+  margin-bottom: 30px;
+  background: linear-gradient(90deg,#00d4ff,#1890ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .form-item {
   margin-bottom: 24px;
@@ -76,9 +87,18 @@ const login = () => {
   color: #fff;
   outline: none;
 }
-.login-btn {
+.tech-btn {
   width: 100%;
   height: 42px;
   font-size: 16px;
+  background: linear-gradient(90deg,#00d4ff,#1890ff);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.tech-btn:hover {
+  opacity: 0.9;
 }
 </style>

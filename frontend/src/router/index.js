@@ -16,79 +16,63 @@ const routes = [
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('@/views/Dashboard.vue'),
-    meta: { requiresAuth: true }
   },
   {
     path: '/recognition',
     name: 'Recognition',
     component: () => import('@/views/Recognition.vue'),
-    meta: { requiresAuth: true }
   },
   {
     path: '/visualization/:recordId?',
     name: 'Visualization',
     component: () => import('@/views/Visualization.vue'),
-    meta: { requiresAuth: true }
   },
   {
     path: '/chat',
     name: 'Chat',
     component: () => import('@/views/Chat.vue'),
-    meta: { requiresAuth: true }
   },
   {
     path: '/profile',
     name: 'Profile',
     component: () => import('@/views/Profile.vue'),
-    meta: { requiresAuth: true }
   },
   {
     path: '/about',
     name: 'About',
     component: () => import('@/views/About.vue'),
-    meta: { requiresAuth: true }
   },
   {
     path: '/history',
     name: 'History',
     component: () => import('@/views/History.vue'),
-    meta: { requiresAuth: true }
   },
   {
     path: '/atlas',
     name: 'Atlas',
     component: () => import('@/views/Atlas.vue'),
-    meta: { requiresAuth: true }
   },
   {
     path: '/plant/:id',
     name: 'PlantDetail',
     component: () => import('@/views/PlantDetail.vue'),
-    meta: { requiresAuth: true }
   },
+
+  // 3个角色首页（已移除专家）
   {
     path: '/admin',
     name: 'Admin',
     component: () => import('@/views/admin/index.vue'),
-    meta: { requiresAuth: true }
   },
   {
     path: '/farmer',
     name: 'Farmer',
     component: () => import('@/views/farmer/index.vue'),
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/expert',
-    name: 'Expert',
-    component: () => import('@/views/expert/index.vue'),
-    meta: { requiresAuth: true }
   },
   {
     path: '/user',
     name: 'User',
     component: () => import('@/views/user/index.vue'),
-    meta: { requiresAuth: true }
   }
 ]
 
@@ -97,19 +81,4 @@ const router = createRouter({
   routes
 })
 
-// // 路由守卫
-// router.beforeEach((to, from, next) => {
-//   const token = localStorage.getItem('token')
-//   const isAuthenticated = !!token
-
-//   if (to.meta.requiresAuth && !isAuthenticated) {
-//     next({ name: 'Login', query: { redirect: to.fullPath } })
-//   } else if (to.meta.requiresGuest && isAuthenticated) {
-//     next({ name: 'Dashboard' })
-//   } else {
-//     next()
-//   }
-// })
-
 export default router
-

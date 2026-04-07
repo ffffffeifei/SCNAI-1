@@ -6,17 +6,37 @@
       <div class="data-item tech-card"><p>图鉴浏览</p><div class="tech-number">132</div></div>
       <div class="data-item tech-card"><p>我的提问</p><div class="tech-number">18</div></div>
       <div class="data-item tech-card"><p>已回复</p><div class="tech-number">16</div></div>
+
       <div class="panel tech-card" style="width:100%">
         <h3 class="tech-title">功能菜单</h3>
         <div class="menu-grid">
-          <div class="menu-item">AI识别</div>
-          <div class="menu-item">图鉴浏览</div>
-          <div class="menu-item">问答咨询</div>
+          <div class="menu-item" @click="show('recognition')">基础识别</div>
+          <div class="menu-item" @click="show('atlas')">图鉴浏览</div>
+          <div class="menu-item" @click="show('chat')">问答咨询</div>
         </div>
+      </div>
+
+      <div class="content-container" style="width:100%;margin-top:20px;">
+        <Recognition v-if="currentPage === 'recognition'" />
+        <Atlas v-if="currentPage === 'atlas'" />
+        <Chat v-if="currentPage === 'chat'" />
       </div>
     </div>
   </div>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+import Recognition from '@/views/Recognition.vue'
+import Atlas from '@/views/Atlas.vue'
+import Chat from '@/views/Chat.vue'
+
+// 默认一进来就显示第一个功能：基础识别
+const currentPage = ref('recognition')
+const show = (page) => {
+  currentPage.value = page
+}
+</script>
 
 <style scoped>
 .dashboard-page { width:100%; min-height:100vh; }

@@ -6,20 +6,38 @@
       <div class="data-item tech-card"><p>地块总数</p><div class="tech-number">58</div></div>
       <div class="data-item tech-card"><p>今日任务</p><div class="tech-number">24</div></div>
       <div class="data-item tech-card"><p>识别次数</p><div class="tech-number">186</div></div>
+
       <div class="panel tech-card" style="width:100%">
         <h3 class="tech-title">功能菜单</h3>
         <div class="menu-grid">
-          <div class="menu-item">农场管理</div>
-          <div class="menu-item">地块管理</div>
-          <div class="menu-item">任务派发</div>
-          <div class="menu-item">识别任务</div>
-          <div class="menu-item">记录查看</div>
-          <div class="menu-item">专家咨询</div>
+          <div class="menu-item" @click="show('field')">地块管理</div>
+          <div class="menu-item" @click="show('task')">任务派发</div>
+          <div class="menu-item" @click="show('history')">记录查看</div>
+          <div class="menu-item" @click="show('dashboard')">数据查看</div>
         </div>
+      </div>
+
+      <div class="content-container" style="width:100%;margin-top:20px;">
+        <div v-if="currentPage === 'field'" class="tech-card" style="padding:30px;text-align:center;color:#fff;">地块管理页面</div>
+        <div v-if="currentPage === 'task'" class="tech-card" style="padding:30px;text-align:center;color:#fff;">任务派发页面</div>
+        <History v-if="currentPage === 'history'" />
+        <Dashboard v-if="currentPage === 'dashboard'" />
       </div>
     </div>
   </div>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+import History from '@/views/History.vue'
+import Dashboard from '@/views/Dashboard.vue'
+
+// 默认显示第一个功能：地块管理
+const currentPage = ref('field')
+const show = (page) => {
+  currentPage.value = page
+}
+</script>
 
 <style scoped>
 .dashboard-page { width:100%; min-height:100vh; }
