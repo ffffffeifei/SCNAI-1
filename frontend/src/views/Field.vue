@@ -1,16 +1,9 @@
 <template>
-  <div class="top-nav">
-    <h2 class="top-nav-title">地块管理</h2>
-    <div class="top-nav-user">
-      <div class="user-avatar"><i class="fas fa-user"></i></div>
-      <div class="user-info">
-        <div class="user-name">{{ user?.username || '管理员' }}</div>
-      </div>
-    </div>
-  </div>
+  
   <div class="farmer-field-page">
     <!-- 页面头部：标题 + 操作区 -->
-    <!-- <div class="page-header">
+    <div class="page-header">
+      <h2 class="page-title">任务派发管理</h2>
       <div class="header-actions">
         <div class="search-box">
           <input
@@ -27,11 +20,10 @@
           新增地块
         </button>
       </div>
-    </div> -->
+    </div>
 
     <!-- 筛选区 -->
     <div class="filter-section">
-      <div class="item">
       <div class="filter-item">
         <label class="filter-label">地块状态：</label>
         <select v-model="filterStatus" class="filter-select">
@@ -55,23 +47,8 @@
       <button class="btn btn-default reset-btn" @click="handleResetFilter">
         重置筛选
       </button>
-      </div>
-      <div class="item">
-      <div class="search-box">
-          <input
-            type="text"
-            v-model="searchKeyword"
-            placeholder="请输入地块名称/编号搜索"
-            class="search-input"
-          />
-          <button class="btn btn-primary search-btn" @click="handleSearch">
-            搜索
-          </button>
-        </div>
-        <button class="btn btn-success add-btn" @click="handleAdd">
-          新增地块
-        </button>
-        </div>
+     
+      
     </div>
 
     <!-- 地块列表 -->

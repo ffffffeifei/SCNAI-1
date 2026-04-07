@@ -3,7 +3,7 @@
     <ParticlesBackground />
     <!-- <Sidebar /> -->
     <main class="main-content">
-      <div class="top-nav">
+      <!-- <div class="top-nav">
         <h2 class="top-nav-title">植物图鉴</h2>
         <div class="top-nav-user">
           <div class="user-avatar"><i class="fas fa-user"></i></div>
@@ -11,7 +11,7 @@
             <div class="user-name">{{ user?.username || '管理员' }}</div>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <div class="card">
         <div class="card-header">

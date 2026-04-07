@@ -3,7 +3,7 @@
     <ParticlesBackground />
     <!-- <Sidebar /> -->
     <main class="main-content">
-      <div class="top-nav">
+      <!-- <div class="top-nav">
         <h2 class="top-nav-title">智能问答</h2>
         <div class="top-nav-user">
           <div class="user-avatar">
@@ -14,7 +14,7 @@
             <div class="user-role">{{ user?.role || '系统管理员' }}</div>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <div class="messages-container" ref="messagesContainer">
         <p v-if="messages.length === 0" class="messages-start">Hi，今天有什么可以帮到你吗？</p>

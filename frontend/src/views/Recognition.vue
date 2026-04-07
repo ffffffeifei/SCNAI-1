@@ -3,7 +3,7 @@
     <ParticlesBackground />
     <!-- <Sidebar /> -->
     <main class="main-content">
-      <div class="top-nav">
+      <!-- <div class="top-nav">
         <h2 class="top-nav-title">图像识别</h2>
         <div class="top-nav-user">
           <div class="user-avatar">
@@ -14,7 +14,7 @@
             <div class="user-role">{{ user?.role || '系统管理员' }}</div>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <div class="recognition-area">
         <section class="upload-section">
