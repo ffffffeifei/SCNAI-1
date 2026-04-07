@@ -73,6 +73,21 @@ const routes = [
     path: '/user',
     name: 'User',
     component: () => import('@/views/user/index.vue'),
+  },
+  {
+    path: '/usermanage',
+    name: 'Usermanage',
+    component: () => import('@/views/Usermanage.vue'),
+  },
+  {
+    path: '/device',
+    name: 'device',
+    component: () => import('@/views/Device.vue'),
+  },
+  {
+    path: '/data',
+    name: 'Data',
+    component: () => import('@/views/Data.vue'),
   }
 ]
 

@@ -10,16 +10,17 @@
       <div class="panel tech-card" style="width:100%">
         <h3 class="tech-title">功能菜单</h3>
         <div class="menu-grid">
-          <div class="menu-item" @click="show('profile')">用户管理</div>
+          <div class="menu-item" @click="show('usermanage')">用户管理</div>
           <div class="menu-item" @click="show('device')">设备管理</div>
-          <div class="menu-item" @click="show('dashboard')">数据监控</div>
+          <div class="menu-item" @click="show('data')">数据监控</div>
         </div>
       </div>
 
+      <!-- 内容区域：显示你新建的3个页面 -->
       <div class="content-container" style="width:100%;margin-top:20px;">
-        <Profile v-if="currentPage === 'profile'" />
-        <div v-if="currentPage === 'device'" class="tech-card" style="padding:30px;text-align:center;color:#fff;">设备管理页面</div>
-        <Dashboard v-if="currentPage === 'dashboard'" />
+        <Usermanage v-if="currentPage === 'usermanage'" />
+        <Device v-if="currentPage === 'device'" />
+        <Data v-if="currentPage === 'data'" />
       </div>
     </div>
   </div>
@@ -27,21 +28,27 @@
 
 <script setup>
 import { ref } from 'vue'
-import Profile from '@/views/Profile.vue'
-import Dashboard from '@/views/Dashboard.vue'
 
-// 默认显示第一个功能：用户管理
-const currentPage = ref('profile')
+// 引入你新建的3个页面
+import Usermanage from '@/views/Usermanage.vue'
+import Device from '@/views/Device.vue'
+import Data from '@/views/Data.vue'
+
+// 登录默认显示：用户管理
+const currentPage = ref('usermanage')
+
 const show = (page) => {
   currentPage.value = page
 }
 </script>
 
 <style scoped>
-.dashboard-page { width:100%; min-height:100vh; }
+.dashboard-page { width:100%; min-height:100vh; background: linear-gradient(135deg, #001529 0%, #0a192f 100%); }
 .header { padding:20px; text-align:center; }
 .main-title { font-size:28px; background:linear-gradient(90deg,#00d4ff,#1890ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-.data-item { flex:1; min-width:220px; text-align:center; }
+.data-item { flex:1; min-width:220px; text-align:center; color:#fff; }
+.tech-card { background: rgba(0,26,41,0.6); border:1px solid rgba(0,212,255,0.2); border-radius:12px; padding:24px; backdrop-filter: blur(6px); }
+.tech-number { font-size:26px; font-weight:bold; color:#00d4ff; margin-top:10px; }
 .menu-grid { display:flex; flex-wrap:wrap; gap:16px; margin-top:16px; }
 .menu-item { width:160px; height:80px; background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.3); border-radius:6px; display:flex; align-items:center; justify-content:center; color:#fff; cursor:pointer; transition:0.3s; }
 .menu-item:hover { background:rgba(0,212,255,0.2); transform:translateY(-3px); }
