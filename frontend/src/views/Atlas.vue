@@ -1,315 +1,597 @@
 <template>
-  <div class="user-crop-detail">
-    <!-- 头部 -->
-    <div class="crop-header">
-      <div class="crop-title">丝瓜图鉴</div>
-      <div class="crop-subtitle">Luffa cylindrica (L.) Roem</div>
+  <div class="plant-atlas-page">
+    <!-- 页面头部 -->
+    <div class="page-header">
+      <h2 class="page-title">植物图鉴</h2>
+      <div class="header-right">
+        <el-input
+          v-model="searchKeyword"
+          placeholder="搜索植物名称或学名..."
+          clearable
+          class="search-input"
+          @input="handleSearch"
+        />
+        <span class="total-count">共 {{ plantList.length }} 种植物</span>
+        <el-tooltip content="刷新" placement="top">
+          <el-button type="primary" circle icon="Refresh" @click="refreshList" />
+        </el-tooltip>
+      </div>
     </div>
 
-    <!-- 内容 -->
-    <div class="crop-content">
-      <!-- 作物介绍 -->
-      <div class="crop-intro">
-        <div class="intro-left">
-          <img src="@/assets/images/icons/shigua.jpeg" alt="丝瓜" class="crop-img" />
-        </div>
-        <div class="intro-right">
-          <h3 class="section-title">作物介绍</h3>
-          <div class="intro-text">
-            <p>丝瓜是葫芦科丝瓜属一年生攀援藤本植物，原产于印度，在我国南北方均有广泛栽培，是夏季常见的优质蔬菜。</p>
-            <p>丝瓜口感清甜、营养丰富，具有清热化痰、凉血解毒的功效。同时丝瓜生长速度快、采收期长，非常适合家庭及规模化种植。</p>
-            <p>成熟后的丝瓜络可用于清洁、药用、工业原料等用途，是一种兼具食用、药用、经济价值的高效作物。</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- 种植要点 -->
-      <div class="crop-planting">
-        <h3 class="section-title">种植要点</h3>
-        <div class="planting-grid">
-          <div class="plant-card" v-for="(item, i) in plantList" :key="i">
-            <div class="plant-title">{{ item.title }}</div>
-            <div class="plant-desc">{{ item.desc }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 常见病虫害（每张都带图片） -->
-      <div class="crop-diseases">
-        <h3 class="section-title">常见病虫害</h3>
-        <div class="disease-grid">
-          <div class="disease-card" v-for="(item, i) in diseaseList" :key="i">
-            <div class="disease-img-box">
-              <img :src="item.img" :alt="item.name" class="disease-img"/>
-            </div>
-            <div class="disease-info">
-              <div class="disease-name">{{ item.name }}</div>
-              <div class="disease-tip">
-                <p><strong>症状：</strong>{{ item.symptom }}</p>
-                <p><strong>防治：</strong>{{ item.prevent }}</p>
+    <!-- 植物卡片列表 -->
+    <div class="plant-card-list">
+      <el-card
+        v-for="plant in filteredPlantList"
+        :key="plant.id"
+        class="plant-card"
+        shadow="hover"
+        @click="openDetailDialog(plant)"
+      >
+        <!-- 植物真实图片（修复require问题） -->
+        <div class="plant-cover">
+          <el-image
+            :src="plant.image"
+            fit="cover"
+            class="plant-img"
+            :preview-src-list="[plant.image]"
+            loading="lazy"
+          >
+            <template #error>
+              <div class="img-placeholder">
+                <el-icon :size="48" color="#67C23A"><Document /></el-icon>
               </div>
+            </template>
+          </el-image>
+        </div>
+        <!-- 植物信息 -->
+        <div class="plant-info">
+          <h3 class="plant-name">{{ plant.name }}</h3>
+          <p class="plant-scientific-name">{{ plant.scientificName }}</p>
+          <div class="plant-meta">
+            <span class="meta-item">{{ plant.family }}</span>
+            <span class="meta-item">{{ plant.origin }}</span>
+          </div>
+          <p class="plant-desc">{{ plant.description }}</p>
+        </div>
+      </el-card>
+    </div>
+
+    <!-- 植物详情弹窗（修复空指针问题） -->
+    <el-dialog
+      v-if="currentPlant"
+      v-model="detailDialogVisible"
+      :title="currentPlant.name + ' 详情'"
+      width="800px"
+      :close-on-click-modal="false"
+      class="plant-detail-dialog"
+    >
+      <div class="detail-content">
+        <!-- 顶部图片+基础信息 -->
+        <div class="detail-header">
+          <div class="detail-img-box">
+            <el-image
+              :src="currentPlant.image"
+              fit="cover"
+              class="detail-img"
+              :preview-src-list="[currentPlant.image]"
+            />
+          </div>
+          <div class="detail-basic-info">
+            <h3>{{ currentPlant.name }}</h3>
+            <p class="scientific-name">{{ currentPlant.scientificName }}</p>
+            <div class="info-tags">
+              <el-tag type="success">{{ currentPlant.family }}</el-tag>
+              <el-tag type="info">{{ currentPlant.origin }}</el-tag>
+              <el-tag type="warning">{{ currentPlant.type }}</el-tag>
             </div>
+            <p class="basic-desc">{{ currentPlant.description }}</p>
           </div>
         </div>
+
+        <!-- 种植要点 -->
+        <div class="detail-section">
+          <h4 class="section-title">🌱 种植要点</h4>
+          <el-descriptions :column="2" border>
+            <el-descriptions-item label="适宜温度">{{ currentPlant.planting.temp }}</el-descriptions-item>
+            <el-descriptions-item label="光照需求">{{ currentPlant.planting.light }}</el-descriptions-item>
+            <el-descriptions-item label="土壤要求">{{ currentPlant.planting.soil }}</el-descriptions-item>
+            <el-descriptions-item label="浇水频率">{{ currentPlant.planting.water }}</el-descriptions-item>
+            <el-descriptions-item label="施肥周期">{{ currentPlant.planting.fertilizer }}</el-descriptions-item>
+            <el-descriptions-item label="生长周期">{{ currentPlant.planting.cycle }}</el-descriptions-item>
+          </el-descriptions>
+        </div>
+
+        <!-- 常见病虫害 -->
+        <div class="detail-section">
+          <h4 class="section-title">🐛 常见病虫害与防治</h4>
+          <el-table :data="currentPlant.pests" border style="width: 100%">
+            <el-table-column prop="name" label="病虫害名称" width="180" />
+            <el-table-column prop="symptom" label="症状" />
+            <el-table-column prop="prevention" label="防治方法" />
+          </el-table>
+        </div>
       </div>
-    </div>
+    </el-dialog>
   </div>
 </template>
 
-<script>
-// 1. 先在 script 标签最顶部，用 import 引入所有图片
-import diseaseSM from '@/assets/images/luffa/SM.png'
-import diseaseBF from '@/assets/images/luffa/BF.png'
-import diseaseYc from '@/assets/images/luffa/YC.png'
-import diseaseTJ from '@/assets/images/luffa/TJ.png'
+<script setup>
+import { ref, computed } from 'vue'
+import { ElMessage } from 'element-plus'
+import { Refresh, Document } from '@element-plus/icons-vue'
 
-export default {
-  name: "UserCropLuffa",
-  data() {
-    return {
-      plantList: [
-        {
-          title: "土壤与施肥",
-          desc: "喜欢疏松肥沃、排水良好的土壤，pH值6.0-7.5最佳。基肥以腐熟有机肥为主，生长期追施氮磷钾复合肥。"
-        },
-        {
-          title: "温度与光照",
-          desc: "丝瓜喜温耐热，适宜生长温度25-30℃。需要充足光照，光照不足会影响开花结果。"
-        },
-        {
-          title: "播种与育苗",
-          desc: "春季气温稳定在15℃以上可播种。育苗移栽更佳，2-3片真叶时定植，成活率更高。"
-        },
-        {
-          title: "搭架引蔓",
-          desc: "丝瓜为蔓生作物，必须搭架栽培。及时引蔓上架，保持通风透光，提高产量。"
-        },
-        {
-          title: "水分管理",
-          desc: "生长期需水量大，保持土壤湿润，但严禁积水。干旱会导致果实畸形、苦味加重。"
-        },
-        {
-          title: "授粉与采收",
-          desc: "丝瓜为雌雄同株异花，可自然授粉。花谢后7-10天即可采收，过晚影响品质。"
-        }
-      ],
-
-      // 病虫害数据（每张都带图片）
-      diseaseList: [
-        {
-          name: "霜霉病",
-          img: diseaseSM,
-          symptom: "叶片出现黄色不规则病斑，潮湿时背面产生黑灰色霉层，叶片快速干枯。",
-          prevent: "加强通风降湿，发病初期用霜脲·锰锌、烯酰吗啉喷雾，7天一次，连喷2-3次。"
-        },
-        {
-          name: "白粉病",
-          img: diseaseBF,
-          symptom: "叶片、茎蔓出现白色粉状物，后期变为灰白色，植株生长衰弱。",
-          prevent: "合理密植，发病初期用嘧菌酯、三唑酮喷雾，交替使用效果更好。"
-        },
-        {
-          name: "蚜虫",
-          img: diseaseYc,
-          symptom: "群集在嫩叶、嫩梢吸食汁液，导致叶片卷曲、皱缩、发黄。",
-          prevent: "黄板诱杀，喷施吡虫啉、啶虫脒，低毒高效，持效期长。"
-        },
-        {
-          name: "炭疽病",
-          img: diseaseTJ,
-          symptom: "叶片出现褐色圆形病斑，后期病斑中央灰白色、边缘深褐色；果实上出现凹陷褐色病斑，湿度大时产生粉红色黏质孢子团，严重时果实腐烂。",
-          prevent: "加强通风降湿，避免田间积水；发病初期喷施咪鲜胺、苯醚甲环唑，7-10天一次，连喷2-3次，交替用药防止抗性。"
-        }
-      ]
-    };
+// 植物完整数据（含图片、种植要点、病虫害）
+const plantList = ref([
+  {
+    id: 1,
+    name: '丝瓜',
+    scientificName: 'Luffa cylindrica',
+    family: '葫芦科',
+    origin: '印度',
+    type: '藤本蔬菜',
+    image: 'https://picsum.photos/id/106/800/600',
+    description: '一年生攀援藤本，果实为夏季常见蔬菜，成熟后网状纤维可作清洁工具，适应性强，南北均可种植。',
+    planting: {
+      temp: '20-30℃，耐热不耐寒',
+      light: '全日照，每天6小时以上',
+      soil: '疏松肥沃、排水良好的壤土',
+      water: '保持土壤湿润，忌积水',
+      fertilizer: '生长期每10天追一次肥',
+      cycle: '播种后60-90天采收'
+    },
+    pests: [
+      {
+        name: '霜霉病',
+        symptom: '叶片出现黄色角斑，背面生白色霉层，严重时叶片枯死',
+        prevention: '发病初期用75%百菌清可湿性粉剂600倍液喷雾，7天一次，连喷2-3次'
+      },
+      {
+        name: '瓜蚜',
+        symptom: '成虫、若虫群集在叶片背面吸食汁液，叶片卷曲、生长不良',
+        prevention: '用10%吡虫啉可湿性粉剂2000倍液喷雾，或悬挂黄板诱杀'
+      }
+    ]
+  },
+  {
+    id: 2,
+    name: '月季',
+    scientificName: 'Rosa chinensis',
+    family: '蔷薇科',
+    origin: '中国',
+    type: '观赏花卉',
+    image: 'https://picsum.photos/id/104/800/600',
+    description: '被誉为“花中皇后”，四季开花，花色丰富，适应性强，是全球最受欢迎的观赏花卉之一。',
+    planting: {
+      temp: '15-25℃，耐寒-15℃',
+      light: '全日照，每天至少6小时',
+      soil: '疏松肥沃、微酸性的沙壤土',
+      water: '见干见湿，忌积水',
+      fertilizer: '生长期每15天追一次复合肥',
+      cycle: '全年开花，盛花期4-10月'
+    },
+    pests: [
+      {
+        name: '黑斑病',
+        symptom: '叶片出现圆形黑斑，周围黄色晕圈，严重时叶片脱落',
+        prevention: '定期修剪通风，发病初期用50%多菌灵可湿性粉剂800倍液喷雾'
+      },
+      {
+        name: '红蜘蛛',
+        symptom: '叶片出现灰白色小点，严重时叶片枯黄脱落',
+        prevention: '用1.8%阿维菌素乳油3000倍液喷雾，重点喷洒叶片背面'
+      }
+    ]
+  },
+  {
+    id: 3,
+    name: '绿萝',
+    scientificName: 'Epipremnum aureum',
+    family: '天南星科',
+    origin: '所罗门群岛',
+    type: '室内观叶',
+    image: 'https://picsum.photos/id/107/800/600',
+    description: '阴性植物，喜温暖湿润，生命力顽强，可水培可土培，是优良的室内净化空气植物。',
+    planting: {
+      temp: '20-30℃，越冬不低于10℃',
+      light: '散射光，忌阳光直射',
+      soil: '疏松透气的腐叶土',
+      water: '保持盆土湿润，空气干燥时喷水增湿',
+      fertilizer: '生长期每月施一次稀薄液肥',
+      cycle: '全年生长，无明显休眠期'
+    },
+    pests: [
+      {
+        name: '叶斑病',
+        symptom: '叶片出现褐色圆形病斑，逐渐扩大，严重时叶片腐烂',
+        prevention: '加强通风，发病初期用70%甲基托布津可湿性粉剂1000倍液喷雾'
+      },
+      {
+        name: '介壳虫',
+        symptom: '叶片、茎干出现白色蜡质虫体，吸食汁液，导致叶片发黄',
+        prevention: '用酒精擦拭虫体，或用40%氧化乐果乳油1000倍液喷雾'
+      }
+    ]
+  },
+  {
+    id: 4,
+    name: '向日葵',
+    scientificName: 'Helianthus annuus',
+    family: '菊科',
+    origin: '北美洲',
+    type: '油料作物',
+    image: 'https://picsum.photos/id/108/800/600',
+    description: '一年生草本，花盘形似太阳，种子可食用、榨油，适应性强，耐旱耐贫瘠，是重要的经济作物。',
+    planting: {
+      temp: '15-30℃，耐热',
+      light: '全日照，每天8小时以上',
+      soil: '排水良好的沙壤土，耐贫瘠',
+      water: '苗期耐旱，花期需充足水分',
+      fertilizer: '现蕾期追一次磷钾肥',
+      cycle: '播种后80-120天成熟'
+    },
+    pests: [
+      {
+        name: '锈病',
+        symptom: '叶片出现黄褐色锈状孢子堆，严重时叶片枯死',
+        prevention: '发病初期用25%三唑酮可湿性粉剂1500倍液喷雾'
+      },
+      {
+        name: '向日葵螟',
+        symptom: '幼虫蛀食花盘和种子，造成空壳、腐烂',
+        prevention: '用2.5%溴氰菊酯乳油3000倍液喷雾，花期防治'
+      }
+    ]
+  },
+  {
+    id: 5,
+    name: '蝴蝶兰',
+    scientificName: 'Phalaenopsis aphrodite',
+    family: '兰科',
+    origin: '热带亚洲',
+    type: '观赏兰花',
+    image: 'https://picsum.photos/id/105/800/600',
+    description: '多年生附生草本，花姿优美，花期长达数月，是高档室内观赏花卉，被誉为“兰花皇后”。',
+    planting: {
+      temp: '20-28℃，越冬不低于15℃',
+      light: '散射光，忌阳光直射',
+      soil: '水苔、树皮等透气基质',
+      water: '见干见湿，忌积水',
+      fertilizer: '生长期每10天施一次兰花专用肥',
+      cycle: '花期2-3个月，全年可开花'
+    },
+    pests: [
+      {
+        name: '炭疽病',
+        symptom: '叶片出现褐色凹陷病斑，逐渐扩大，严重时叶片腐烂',
+        prevention: '加强通风，发病初期用50%多菌灵可湿性粉剂800倍液喷雾'
+      },
+      {
+        name: '蜗牛',
+        symptom: '啃食嫩叶、花朵，造成孔洞、缺刻',
+        prevention: '人工捕捉，或撒施四聚乙醛颗粒诱杀'
+      }
+    ]
+  },
+  {
+    id: 6,
+    name: '番茄',
+    scientificName: 'Solanum lycopersicum',
+    family: '茄科',
+    origin: '南美洲',
+    type: '果蔬两用',
+    image: 'https://picsum.photos/id/292/800/600',
+    description: '一年生草本，果实营养丰富，可生食、烹饪，全球广泛种植，是最受欢迎的果蔬作物之一。',
+    planting: {
+      temp: '20-25℃，耐热不耐寒',
+      light: '全日照，每天6小时以上',
+      soil: '疏松肥沃、排水良好的壤土',
+      water: '见干见湿，花期控水防徒长',
+      fertilizer: '坐果后追一次磷钾肥',
+      cycle: '播种后90-120天采收'
+    },
+    pests: [
+      {
+        name: '晚疫病',
+        symptom: '叶片出现暗绿色病斑，背面生白色霉层，果实腐烂',
+        prevention: '发病初期用72%霜脲氰锰锌可湿性粉剂800倍液喷雾'
+      },
+      {
+        name: '棉铃虫',
+        symptom: '幼虫蛀食果实，造成孔洞、腐烂',
+        prevention: '用2.5%氯氟氰菊酯乳油2000倍液喷雾，花期防治'
+      }
+    ]
   }
-};
+])
+
+// 搜索关键词
+const searchKeyword = ref('')
+// 详情弹窗控制
+const detailDialogVisible = ref(false)
+// 当前选中的植物
+const currentPlant = ref(null)
+
+// 过滤后的植物列表（搜索功能）
+const filteredPlantList = computed(() => {
+  if (!searchKeyword.value) return plantList.value
+  const keyword = searchKeyword.value.toLowerCase()
+  return plantList.value.filter(item => 
+    item.name.toLowerCase().includes(keyword) || 
+    item.scientificName.toLowerCase().includes(keyword)
+  )
+})
+
+// 打开详情弹窗
+const openDetailDialog = (plant) => {
+  currentPlant.value = plant
+  detailDialogVisible.value = true
+}
+
+// 搜索事件
+const handleSearch = () => {
+  // 可添加搜索防抖逻辑，这里遵循少代码原则直接过滤
+}
+
+// 刷新列表
+const refreshList = () => {
+  ElMessage.success('列表已刷新')
+  // 实际项目中可在这里重新请求接口获取最新数据
+}
 </script>
 
-<style scoped>
-/* 整体页面 */
-.user-crop-detail {
-  width: 100%;
+<style scoped lang="scss">
+// 页面容器
+.plant-atlas-page {
   padding: 20px;
-  box-sizing: border-box;
-  background: rgba(0, 26, 41, 0.7);
-  min-height: 100vh;
+  background-color: #1e293b;
+  min-height: calc(100vh - 84px);
 }
 
-/* 头部 */
-.crop-header {
-  text-align: center;
-  margin-bottom: 30px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #e9ecef;
-}
-.crop-title {
-  font-size: 26px;
-  font-weight: bold;
-  color: #fff;
-  margin-bottom: 6px;
-}
-.crop-subtitle {
-  font-size: 14px;
-  color: #666;
-}
-
-/* 内容容器 */
-.crop-content {
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-/* 介绍区域 */
-.crop-intro {
+// 页面头部
+.page-header {
   display: flex;
-  flex-wrap: wrap;
-  gap: 25px;
-  background: #1e324d;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 30px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-.intro-left {
-  flex: 1;
-  min-width: 280px;
-}
-.crop-img {
-  width: 100%;
-  height: 360px;
-  object-fit: cover;
-  border-radius: 6px;
-}
-.intro-right {
-  flex: 2;
-  min-width: 280px;
-}
-.section-title {
-  font-size: 20px;
-  font-weight: bold;
-  color: #fff;
-  margin-bottom: 15px;
-  padding-bottom: 6px;
-  border-bottom: 2px solid #28a745;
-  display: inline-block;
-}
-.intro-text {
-  font-size: 15px;
-  line-height: 1.7;
-  color: #fff;
-}
-.intro-text p {
-  margin-bottom: 10px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  .page-title {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    .search-input {
+      width: 280px;
+      ::v-deep .el-input__inner {
+        background-color: #334155;
+        border-color: #475569;
+        color: #fff;
+        &::placeholder {
+          color: #94a3b8;
+        }
+      }
+    }
+    .total-count {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+    ::v-deep .el-button {
+      background-color: #67C23A;
+      border-color: #67C23A;
+    }
+  }
 }
 
-/* 种植要点卡片 */
-.crop-planting {
-  background: #1e324d;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 30px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-.planting-grid {
+// 卡片列表容器
+.plant-card-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 15px;
-}
-.plant-card {
-  background: #1e3a5f;
-  border-left: 3px solid #28a745;
-  padding: 15px;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-}
-.plant-title {
-  font-weight: bold;
-  margin-bottom: 6px;
-  color: #f8f9fa;
-}
-.plant-desc {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #f8f9fa;
-}
-
-/* 病虫害卡片（带图片） */
-.crop-diseases {
-  background: #1e324d;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-.disease-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
   gap: 20px;
 }
-.disease-card {
-  display: flex;
-  align-items: stretch; /* 关键：让卡片高度完全一致 */
-  background: #1e3a5f;
-  border-left: 3px solid #28a745;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
 
+// 植物卡片
+.plant-card {
+  background-color: #334155;
+  border: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  ::v-deep .el-card__body {
+    padding: 16px;
+  }
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  // 植物图片
+  .plant-cover {
+    width: 100%;
+    height: 160px;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    .plant-img {
+      width: 100%;
+      height: 100%;
+    }
+    .img-placeholder {
+      width: 100%;
+      height: 100%;
+      background-color: #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  // 植物信息
+  .plant-info {
+    .plant-name {
+      color: #fff;
+      font-size: 16px;
+      font-weight: 500;
+      margin: 0 0 4px 0;
+    }
+    .plant-scientific-name {
+      color: #94a3b8;
+      font-size: 12px;
+      font-style: italic;
+      margin: 0 0 8px 0;
+    }
+    .plant-meta {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 8px;
+      .meta-item {
+        color: #67C23A;
+        font-size: 12px;
+        background-color: rgba(103, 194, 58, 0.1);
+        padding: 2px 8px;
+        border-radius: 4px;
+      }
+    }
+    .plant-desc {
+      color: #cbd5e1;
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
   }
 }
-/* 图片容器：固定尺寸 + 居中裁剪，保证所有图片大小一致 */
-.disease-img-box {
-  width: 160px; /* 固定宽度 */
-  height: 160px; /* 固定高度，和宽度一致，正方形 */
-  flex-shrink: 0; /* 禁止压缩 */
-  overflow: hidden;
-  background: #1e293b; /* 图片背景，避免留白 */
-}
-.disease-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* 核心：等比例裁剪，居中显示，保证图片不变形、大小统一 */
-  object-position: center; /* 居中裁剪，避免只显示局部 */
-}
-.disease-info {
-  flex: 1;
-  padding: 15px;
-}
-.disease-name {
-  font-weight: bold;
-  font-size: 16px;
-  color: #28a745;
-  margin-bottom: 8px;
-}
-.disease-tip {
-  font-size: 13px;
-  line-height: 1.6;
-  color: #fff;
-}
-.disease-tip p {
-  margin: 0 0 6px 0;
+
+// 详情弹窗样式
+::v-deep .plant-detail-dialog {
+  .el-dialog__header {
+    background-color: #1e293b;
+    border-bottom: 1px solid #475569;
+    .el-dialog__title {
+      color: #fff;
+    }
+    .el-dialog__close {
+      color: #fff;
+      &:hover {
+        color: #67C23A;
+      }
+    }
+  }
+  .el-dialog__body {
+    background-color: #1e293b;
+    padding: 20px;
+  }
 }
 
-/* 响应式 */
-@media (max-width: 768px) {
-  .disease-grid {
+.detail-content {
+  color: #fff;
+  // 详情头部
+  .detail-header {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 24px;
+    .detail-img-box {
+      width: 300px;
+      height: 300px;
+      border-radius: 8px;
+      overflow: hidden;
+      .detail-img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .detail-basic-info {
+      flex: 1;
+      h3 {
+        font-size: 24px;
+        margin: 0 0 8px 0;
+        color: #fff;
+      }
+      .scientific-name {
+        color: #94a3b8;
+        font-style: italic;
+        margin: 0 0 12px 0;
+      }
+      .info-tags {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .basic-desc {
+        color: #cbd5e1;
+        line-height: 1.6;
+        margin: 0;
+      }
+    }
+  }
+
+  // 详情板块
+  .detail-section {
+    margin-bottom: 24px;
+    .section-title {
+      font-size: 18px;
+      margin: 0 0 12px 0;
+      color: #67C23A;
+    }
+    ::v-deep .el-descriptions {
+      background-color: #334155;
+      .el-descriptions__label {
+        background-color: #475569;
+        color: #fff;
+      }
+      .el-descriptions__content {
+        color: #cbd5e1;
+      }
+    }
+    ::v-deep .el-table {
+      background-color: #334155;
+      color: #fff;
+      .el-table__header-wrapper {
+        th {
+          background-color: #475569;
+          color: #fff;
+        }
+      }
+      .el-table__body-wrapper {
+        td {
+          color: #cbd5e1;
+          border-color: #475569;
+        }
+      }
+    }
+  }
+}
+
+// 响应式适配
+@media screen and (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    .header-right {
+      width: 100%;
+      .search-input {
+        flex: 1;
+      }
+    }
+  }
+  .plant-card-list {
     grid-template-columns: 1fr;
   }
-  .disease-card {
+  .detail-header {
     flex-direction: column;
+    .detail-img-box {
+      width: 100%;
+      height: 200px;
+    }
   }
-  .disease-img {
-    width: 100%;
-    height: 180px;
+  ::v-deep .plant-detail-dialog {
+    width: 90% !important;
   }
 }
 </style>
